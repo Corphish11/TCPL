@@ -15,10 +15,9 @@ main()
 /* power: raise base to n-th power: n >= 0 */
 int power(int m, int n)
 {
-    int i, p;
+    int p;
 
-    p = 1;
-    for (i = 0; i < n; i++)
+    for (p = 1; n > 0; --n)
         p = p * m;
     return p;
 }
