@@ -8,9 +8,11 @@ main()
     int i, pos;
 
     pos = 0;
-    c = getchar();
-    while (c != EOF) {
-        if (c != '\t') {
+    while ((c = getchar()) != EOF) {
+	if (c == '\n') {
+            putchar(c);
+            pos = 0;
+        } else if (c != '\t') {
             putchar(c);
             ++pos;
         } else {
@@ -21,6 +23,5 @@ main()
                 putchar(' ');
         }
         
-        c = getchar();
     }
 }
