@@ -6,6 +6,7 @@ unsigned getbits(unsigned x, int p, int n);
 unsigned setbits(unsigned x, int p, int n, unsigned y);
 unsigned invert(unsigned x, int p, int n);
 unsigned rightrot(unsigned, int n);
+int bitcount(unsigned x);
 
 main()
 {
@@ -45,4 +46,13 @@ unsigned rightrot(unsigned x, int n)
 	return r | (x >> n & ~(~0 << (sizeof(unsigned)*8 - n)));
 }
 
-
+int
+bitcount(unsigned x)
+{
+	int b = 0;
+	while (x) {
+		b++;
+		x &= x - 1;
+	}
+	return b;
+}
