@@ -198,24 +198,22 @@ int getop(char s[])
 	}
 }
 /* getch.c - get and unget a char */
-#define		BUFSIZE		100
-
-char buf[BUFSIZE];	/* buffer for ungetch */
-int bufp = 0;		/* next free position in buf */
+int ungetch_char = -1;
 
 int getch(void)		/* get a (possibly pushed back) character */
 {
-	return (bufp > 0) ? buf[--bufp] : getchar();
+	int c;
+
+	c = ungetch_char == -1 ? getchar() : ungetch_char;
+	ungetch_char = -1;
+	return c;
 }
 
 void ungetch(int c)	/* push character back on input */
 {
-	if (bufp >= BUFSIZE)
-		printf("ungetch: too many characters\n");
-	else
-		buf[bufp++] = c;
+	ungetch_char = c;
 }
-
+/*
 void ungets(char s[])
 {
 	int i;
@@ -223,3 +221,4 @@ void ungets(char s[])
 	for (i = strlen(s); i >= 0; --i)
 		ungetch(s[i]);
 }
+*/
