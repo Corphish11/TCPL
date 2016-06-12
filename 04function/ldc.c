@@ -1,9 +1,13 @@
 /* ldc.c - Reverse Polish calculator */
 #include <stdio.h>
 #include <stdlib.h>			/* for atof() */
+#include <math.h>
 
 #define		MAXOP	100		/* max size of operand of operator */
 #define		NUMBER	'0'		/* signal that a number was found */
+#define		FUNC	'\''		/* signal that a function was found */
+
+/* function operators */
 
 int getop(char []);
 void push(double);
@@ -23,6 +27,16 @@ main()
 		switch (type) {
 		case NUMBER:
 			push(atof(s));
+			break;
+		case FUNC:
+			if (strcmp("sin", &s[1]) == 0)
+				push(sin(pop()));
+			else if (strcmp("exp", &s[1]) == 0)
+				push(exp(pop()));
+			else if (strcmp("pow", &s[1]) == 0) {
+				op2 = pop();
+				push(pow(pop(), op2));
+			}
 			break;
 		case '+':
 			push(pop() + pop());
@@ -137,32 +151,44 @@ int getop(char s[])
 		;
 
 	s[1] = '\0';
-	if (!isdigit(c) && c != '.' && c != '-')
+	if (!isdigit(c) && c != '.' && c != '-' && c != '\'')
 		return c;		/* not a number */
 
-	if (c == '-') {
-		s[1] = c = getch();
-		i = 1;
-	} else
-		i = 0;
+	i = 0;
 
-	if (isdigit(c))			/* collect integer part */
-		while (isdigit(s[++i] = c = getch()))
+	if (c == '\'') {		/* function operator */
+		while (isalnum((s[++i] = c = getch())))
 			;
-	if (c == '.')			/* colloct fractional part */
-		while (isdigit(s[++i] = c = getch()))
-			;
-	s[i] = '\0';
+		if (c != EOF)
+			ungetch(c);
+		s[i] = '\0';
+		return FUNC;
+	} else {
 
-	/* '-' is not unary operator if the following character is not digit */
-	if (strcmp(s, "-") == 0) {
-		ungetch(c);
-		return '-';
+		if (c == '-') {
+			s[1] = c = getch();
+			i = 1;
+		}
+
+		if (isdigit(c))			/* collect integer part */
+			while (isdigit(s[++i] = c = getch()))
+			;
+		if (c == '.')			/* colloct fractional part */
+			while (isdigit(s[++i] = c = getch()))
+			;
+
+		s[i] = '\0';
+
+		/* '-' is not unary operator if the following character is not digit */
+		if (strcmp(s, "-") == 0) {
+			ungetch(c);
+			return '-';
+		}
+		if (c != EOF)
+			ungetch(c);
+		return NUMBER;
+
 	}
-
-	if (c != EOF)
-		ungetch(c);
-	return NUMBER;
 }
 /* getch.c - get and unget a char */
 #define		BUFSIZE		100
