@@ -1,6 +1,7 @@
 /* ldc.c - Reverse Polish calculator */
 #include <stdio.h>
 #include <stdlib.h>			/* for atof() */
+#include <string.h>
 #include <math.h>
 
 #define		MAXOP	100		/* max size of operand of operator */
@@ -213,4 +214,12 @@ void ungetch(int c)	/* push character back on input */
 		printf("ungetch: too many characters\n");
 	else
 		buf[bufp++] = c;
+}
+
+void ungets(char s[])
+{
+	int i;
+
+	for (i = strlen(s); i >= 0; --i)
+		ungetch(s[i]);
 }
