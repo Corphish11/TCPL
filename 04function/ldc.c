@@ -16,6 +16,9 @@ void clear();
 double peek();
 void exchg();
 
+
+double var;
+
 /* reverse Polish calculator */
 main()
 {
@@ -63,7 +66,10 @@ main()
 				printf("error: zero divisor\n");
 			break;
 		case 'p':		/* print top stack number */
-			printf("\t%.8g\n", peek());
+			printf("\t%.8g\n", var = peek());
+			break;
+		case 'v':
+			printf("\t%.8g\n", var);
 			break;
 		case 'x':
 			exchg();
