@@ -4,16 +4,16 @@
 #define swap(t, x, y) {	\
 	t swap_t;	\
 			\
-	swap_t = *(x);	\
-	*(x) = *(y);	\
-	*(y) = swap_t;	\
+	swap_t = (x);	\
+	(x) = (y);	\
+	(y) = swap_t;	\
 			\
 }
 
 void reverse(int v[], int left, int right)
 {
 	if (left < right) {
-		swap(int, &v[left], &v[right]);
+		swap(int, v[left], v[right]);
 		reverse(v, left+1, right-1);
 	}
 }
