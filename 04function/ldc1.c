@@ -8,7 +8,11 @@
 #define		NUMBER	'0'		/* signal that a number was found */
 #define		FUNC	'\''		/* signal that a function was found */
 
-/* function operators */
+#define 	LINESIZE	1000
+char line[LINESIZE];
+int line_pos;
+
+int my_getline(char s[], int lim);
 
 int getop(char []);
 void push(double);
@@ -26,6 +30,8 @@ main()
 	int type;
 	double op2, op3;
 	char s[MAXOP];
+
+	my_getline(line, LINESIZE);
 
 	while ((type = getop(s)) != EOF) {
 		switch (type) {
@@ -146,16 +152,21 @@ void exchg()
 /* getop.c - get next operator */
 #include <ctype.h>
 
-int getch(void);
-void ungetch(int);
-
 /* getop: get next operator or numeric operand */
 int getop(char s[])
 {
 	int i, c;
 
-	while ((s[0] = c = getch()) == ' ' || c == '\t')
+	if (line[0] == '\0')
+		return EOF;
+
+	while ((s[0] = c = line[line_pos++]) == ' ' || c == '\t')
 		;
+
+	if (c == '\n') {
+		my_getline(line, LINESIZE);
+		line_pos = 0;
+	}
 
 	s[1] = '\0';
 	if (!isdigit(c) && c != '.' && c != '-' && c != '\'')
@@ -164,62 +175,37 @@ int getop(char s[])
 	i = 0;
 
 	if (c == '\'') {		/* function operator */
-		while (isalnum((s[++i] = c = getch())))
+		while (isalnum((s[++i] = c = line[line_pos++])))
 			;
 		if (c != EOF)
-			ungetch(c);
+			--line_pos;
 		s[i] = '\0';
 		return FUNC;
 	} else {
 
 		if (c == '-') {
-			s[1] = c = getch();
+			s[1] = c = line[line_pos++];
 			i = 1;
 		}
 
 		if (isdigit(c))			/* collect integer part */
-			while (isdigit(s[++i] = c = getch()))
+			while (isdigit(s[++i] = c = line[line_pos++]))
 			;
 		if (c == '.')			/* colloct fractional part */
-			while (isdigit(s[++i] = c = getch()))
+			while (isdigit(s[++i] = c = line[line_pos++]))
 			;
 
 		s[i] = '\0';
 
 		/* '-' is not unary operator if the following character is not digit */
 		if (strcmp(s, "-") == 0) {
-			ungetch(c);
+			--line_pos;
 			return '-';
 		}
 		if (c != EOF)
-			ungetch(c);
+			--line_pos;
 		return NUMBER;
 
 	}
 }
-/* getch.c - get and unget a char */
-int ungetch_char = -1;
 
-int getch(void)		/* get a (possibly pushed back) character */
-{
-	int c;
-
-	c = ungetch_char == -1 ? getchar() : ungetch_char;
-	ungetch_char = -1;
-	return c;
-}
-
-void ungetch(int c)	/* push character back on input */
-{
-	if (c != EOF)
-		ungetch_char = c;
-}
-/*
-void ungets(char s[])
-{
-	int i;
-
-	for (i = strlen(s); i >= 0; --i)
-		ungetch(s[i]);
-}
-*/
