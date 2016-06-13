@@ -1,20 +1,19 @@
 /* reverse.c - reverse array recursively */
 #include <stdio.h>
 
-
-void swap(int v[], int i, int j)
-{
-	int t;
-
-	t = v[i];
-	v[i] = v[j];
-	v[j] = t;
+#define swap(t, x, y) {	\
+	t swap_t;	\
+			\
+	swap_t = *(x);	\
+	*(x) = *(y);	\
+	*(y) = swap_t;	\
+			\
 }
 
 void reverse(int v[], int left, int right)
 {
 	if (left < right) {
-		swap(v, left, right);
+		swap(int, &v[left], &v[right]);
 		reverse(v, left+1, right-1);
 	}
 }
