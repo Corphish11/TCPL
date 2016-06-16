@@ -3,20 +3,26 @@
 #include <string.h>
 
 #define MAXLINES	100	/* max # lines to be sorted */
-
 char *lineptr[MAXLINES];	/* pointers to text lines */
 
 int readlines(char *lineptr[], int nlines);
 void writelines(char *lineptr[], int nlines);
-void qsort(char *lineptr[], int, int);
+void qsort(void *lineptr[], int left, int right,
+	int (*comp)(void *, void *));
+int numcmp(const char *, const char *);
 
 /* sort input lines */
-main()
+main(int argc, char *argv[])
 {
 	int nlines;		/* number of input lines read */
+	int numeric = 0;
+
+	if (argc > 1 && strcmp(argv[1], "-n") == 0)
+		numeric = 1;
 
 	if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
-		qsort(lineptr, 0, nlines-1);
+		qsort((void **)lineptr, 0, nlines-1,
+			(int (*)(void *, void *))(numeric ? numcmp : strcmp));
 		writelines(lineptr, nlines);
 		return 0;
 	} else {
@@ -55,3 +61,4 @@ void writelines(char *lineptr[], int nlines)
 	for (i = 0; i < nlines; i++)
 		printf("%s\n", *lineptr++);
 }
+
