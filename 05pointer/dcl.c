@@ -17,15 +17,20 @@ char name[MAXTOKEN];		/* identifier name */
 char datatype[MAXTOKEN];	/* data type = "char, int, etc. */
 char out[1000];			/* output string */
 
+void recover(void);			/* recover error of current line */
+
 main()				/* convert declaration to words */
 {
 	while (gettoken() != EOF) {		/* 1st token on line */
 		strcpy(datatype, token);	/* is the datatype */
 		out[0] = '\0';
 		dcl();				/* parse rest of line */
-		if (tokentype != '\n')
+
+		if (tokentype != '\n') {
 			printf("syntax error\n");
-		printf("%s: %s %s\n", name, out, datatype);
+			recover();
+		} else
+			printf("%s: %s %s\n", name, out, datatype);
 	}
 	return 0;
 }
@@ -81,12 +86,16 @@ void dirdcl(void)
 
 	if (tokentype == '(') {			/* ( dcl ) */
 		dcl();
-		if (tokentype != ')')
+		if (tokentype != ')') {
 			printf("error: missing )\n");
+			recover();
+		}
 	} else if (tokentype == NAME)		/* variable name */
 		strcpy(name, token);
-	else
+	else {
 		printf("error: expected name or (dcl)\n");
+		recover();
+	}
 
 	while ((type = gettoken()) == PARENS || type == BRACKETS)
 		if (type == PARENS)
@@ -96,4 +105,10 @@ void dirdcl(void)
 			strcat(out, token);
 			strcat(out, " of");
 		}
+}
+
+void recover(void)
+{
+	while (gettoken() != '\n')
+		;
 }
