@@ -16,7 +16,7 @@ int numcmp(const char *, const char *);
 main(int argc, char *argv[])
 {
 	int nlines;		/* number of input lines read */
-	int numeric = 0, rev = 0;
+	int numeric = 0, rev = 0, ignorecase = 0;
 	int c;
 
 	while (--argc > 0 && (*++argv)[0] == '-')
@@ -28,6 +28,9 @@ main(int argc, char *argv[])
 			case 'n':
 				numeric = 1;
 				break;
+			case 'f':
+				ignorecase = 1;
+				break;
 			default:
 				printf("sort: illegal options %c\n", c);
 				return 1;
@@ -38,7 +41,7 @@ main(int argc, char *argv[])
 
 	if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
 		qsort((void **)lineptr, 0, nlines-1,
-			(int (*)(void *, void *))(numeric ? numcmp : strcmp));
+			(int (*)(void *, void *))(numeric ? numcmp : (ignorecase ? strcasecmp : strcmp)));
 
 		if (rev)
 			reverse((void **)lineptr, nlines);
