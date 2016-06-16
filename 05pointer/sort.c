@@ -9,20 +9,40 @@ int readlines(char *lineptr[], int nlines);
 void writelines(char *lineptr[], int nlines);
 void qsort(void *lineptr[], int left, int right,
 	int (*comp)(void *, void *));
+void reverse(void *v[], int n);
 int numcmp(const char *, const char *);
 
 /* sort input lines */
 main(int argc, char *argv[])
 {
 	int nlines;		/* number of input lines read */
-	int numeric = 0;
+	int numeric = 0, rev = 0;
+	int c;
 
-	if (argc > 1 && strcmp(argv[1], "-n") == 0)
-		numeric = 1;
+	while (--argc > 0 && (*++argv)[0] == '-')
+		while (c = *++argv[0])
+			switch (c) {
+			case 'r':
+				rev = 1;
+				break;
+			case 'n':
+				numeric = 1;
+				break;
+			default:
+				printf("sort: illegal options %c\n", c);
+				return 1;
+			}
+
+//	printf("reverse %d\n", rev);
+//	printf("numeric %d\n", numeric);
 
 	if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
 		qsort((void **)lineptr, 0, nlines-1,
 			(int (*)(void *, void *))(numeric ? numcmp : strcmp));
+
+		if (rev)
+			reverse((void **)lineptr, nlines);
+
 		writelines(lineptr, nlines);
 		return 0;
 	} else {

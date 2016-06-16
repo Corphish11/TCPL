@@ -28,3 +28,15 @@ void swap(void * v[], int i, int j)
 	v[j] = t;
 }
 
+
+void reverse(void *v[], int n)
+{
+	int i;
+	void *p;
+
+	for (i = 0; i < n/2; i++) {
+		p = v[i];
+		v[i] = v[n-i-1];
+		v[n-i-1] = p;
+	}
+}
